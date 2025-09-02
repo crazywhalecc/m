@@ -1,0 +1,57 @@
+name: Build Static Executable Binaries
+
+on:
+  push:
+  workflow_dispatch:
+
+jobs:
+  build-release-artifacts:
+    name: "Build Binary for ${{ matrix.operating-system.name }}"
+    runs-on: ${{ matrix.operating-system.os }}
+    strategy:
+      matrix:
+        os:
+          - linux-x86_64
+          - macos-x86_64
+          - linux-aarch64
+          - macos-aarch64
+    steps:
+      - name: "Checkout"
+        uses: "actions/checkout@v4"
+
+      - name: "Install PHP for official runners"
+        uses: shivammathur/setup-php@v2
+        with:
+          coverage: none
+          tools: composer:v2
+          php-version: 8.4
+          ini-values: memory_limit=-1
+          extensions: curl, openssl, mbstring
+
+      - name: "Install Locked Dependencies"
+        run: "composer install --no-interaction --no-progress"
+
+      - name: "Build PHAR File"
+        run: "vendor/bin/box compile"
+
+      - name: "Download Minimal Combination"
+        run: |
+          curl -fsSL https://dl.static-php.dev/static-php-cli/minimal/php-8.4.12-micro-${{ matrix.os }}.tar.gz -o tmp.tgz
+          tar -zxvf tmp.tgz && rm tmp.tgz
+
+      - name: "Generate Executable"
+        run: |
+          cat micro.sfx m.phar > m && chmod +x m
+          tar -zcvf m-${{ matrix.os }}.tgz m
+
+      - name: "Upload Artifact"
+        uses: actions/upload-artifact@v3
+        with:
+          name: m-${{ matrix.os }}
+          path: m
+
+      - name: "Upload Binaries to Release"
+        uses: softprops/action-gh-release@v1
+        if: ${{startsWith(github.ref, 'refs/tags/') }}
+        with:
+          files: m-${{ matrix.os }}.tgz

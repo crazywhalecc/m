@@ -1,0 +1,18 @@
+{
+  "alias": "spc-php.phar",
+  "banner": false,
+  "blacklist": [
+    ".github"
+  ],
+  "compression": "GZ",
+  "directories": [
+    "vendor/psr",
+    "vendor/laravel/prompts",
+    "vendor/symfony"
+  ],
+  "files": [
+    "m.ini"
+  ],
+  "git-commit-short": "git_commit_short",
+  "output": "m.phar"
+}

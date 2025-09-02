@@ -1,0 +1,12 @@
+{
+    "name": "crazywhalecc/m",
+    "description": "Easily move downloaded files to current folder",
+    "type": "project",
+    "require": {
+        "laravel/prompts": "^0.3.6"
+    },
+    "require-dev": {
+        "humbug/box": "^4.6"
+    },
+    "license": "MIT"
+}
