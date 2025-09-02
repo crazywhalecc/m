@@ -17,7 +17,7 @@ First, download the `m` executable from the [releases page](https://github.com/c
 
 Then, you can use the `m` command followed by the filename to move the file from your default download directory to your current working directory.
 
-Download and extract the appropriate binary for your system:
+Download and extract the appropriate static binary for your system:
 
 ```bash
 # Linux x86_64
