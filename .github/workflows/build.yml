@@ -6,8 +6,8 @@ on:
 
 jobs:
   build-release-artifacts:
-    name: "Build Binary for ${{ matrix.operating-system.name }}"
-    runs-on: ${{ matrix.operating-system.os }}
+    name: "Build Binary for ${{ matrix.os }}"
+    runs-on: ubuntu-latest
     strategy:
       matrix:
         os:
