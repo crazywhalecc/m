@@ -58,11 +58,11 @@ We support the config file to customize the download directory and times.
 Create a config file at `~/.config/m.ini` with the following content:
 
 ```ini
-search_paths = ${HOME}/Downloads;${HOME}/Sync
+search_paths = ${HOME}/Downloads:${HOME}/Sync
 time_limit = 30
 ```
 
 The `search_paths` option allows you to specify multiple directories to search for the most recent file, 
-separated by semicolons. 
+separated by `:`. 
 
 The `time_limit` option sets the maximum age (in minutes) of files to consider for moving.

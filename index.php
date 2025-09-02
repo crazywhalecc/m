@@ -6,7 +6,7 @@ use function Laravel\Prompts\table;
 
 require "vendor/autoload.php";
 
-const VERSION = '0.1.0';
+const VERSION = '0.1.1';
 
 $config_paths = [
     getenv('HOME') . '/.config/m.ini',
@@ -28,7 +28,7 @@ if (!isset($config)) {
 }
 
 // standardize config
-$config['search_paths'] = array_filter(array_map('trim', explode(';', $config['search_paths'])));
+$config['search_paths'] = array_filter(array_map('trim', explode(':', $config['search_paths'])));
 $config['time_limit'] = intval($config['time_limit']);
 
 // search every paths
