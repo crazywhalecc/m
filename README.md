@@ -43,11 +43,9 @@ Now you can use the `m` command in your terminal:
 m --help
 # Move the most recent downloaded file to the current directory
 m
-```
-
-Or, you could preview the file list:
-
-```bash
+# List the 5 most recent downloaded files to move
+m 5
+# List only, do not move
 m list
 ```
 

@@ -6,7 +6,7 @@ use function Laravel\Prompts\table;
 
 require "vendor/autoload.php";
 
-const VERSION = '0.1.1';
+const VERSION = '0.1.2';
 
 $config_paths = [
     getenv('HOME') . '/.config/m.ini',
@@ -31,30 +31,51 @@ if (!isset($config)) {
 $config['search_paths'] = array_filter(array_map('trim', explode(':', $config['search_paths'])));
 $config['time_limit'] = intval($config['time_limit']);
 
-// search every paths
-$selected_files = [];
-foreach ($config['search_paths'] as $search_path) {
-    // echo "\e[32mSearching in: $search_path\e[0m\n";
-    if (!is_dir($search_path)) {
-        continue;
+function filetime2str(string $filename): string
+{
+    $minutes = (time() - filemtime($filename)) / 60;
+    if ($minutes >= 60) {
+        if ($minutes >= 1440) {
+            return intval($minutes / 1440) . ' days ago';
+        }
+        return intval($minutes / 60) . ' hours ago';
     }
-    $files = scandir($search_path);
-    // remove . and ..
-    $files = array_diff($files, ['.', '..']);
-    foreach ($files as $file) {
-        if (in_array($file, IGNORE_FILES)) {
+    return ((time() - filemtime($filename)) / 60) . ' minutes ago';
+}
+
+function listFiles(array $config, int $limit = 0): array
+{
+    // search every paths
+    $selected_files = [];
+    foreach ($config['search_paths'] as $search_path) {
+        // echo "\e[32mSearching in: $search_path\e[0m\n";
+        if (!is_dir($search_path)) {
             continue;
         }
-        // filter only {time_limit} minutes ago files
-        if (filemtime($search_path . '/' . $file) >= time() - $config['time_limit'] * 60) {
-            $selected_files[] = $search_path . '/' . $file;
+        $files = scandir($search_path);
+        // remove . and ..
+        $files = array_diff($files, ['.', '..']);
+        foreach ($files as $file) {
+            if (in_array($file, IGNORE_FILES)) {
+                continue;
+            }
+            // filter only {time_limit} minutes ago files
+            if (filemtime($search_path . '/' . $file) >= time() - $config['time_limit'] * 60) {
+                $selected_files[] = $search_path . '/' . $file;
+            }
+        }
+        // sort by modified time desc
+        usort($selected_files, function ($a, $b) {
+            return filemtime($b) - filemtime($a);
+        });
+        // limit number of files
+        if ($limit > 0) {
+            $selected_files = array_slice($selected_files, 0, $limit);
         }
     }
-    // sort by modified time desc
-    usort($selected_files, function ($a, $b) {
-        return filemtime($b) - filemtime($a);
-    });
+    return $selected_files;
 }
+
 
 // output
 switch ($argv[1] ?? null) {
@@ -68,11 +89,17 @@ switch ($argv[1] ?? null) {
         echo "  help          Show this help message\n";
         echo "  list, ls, l   List files found in the last {$config['time_limit']} minutes\n";
         echo "  (default)     Move files found in the last {$config['time_limit']} minutes to current directory\n";
+        echo "  [nums]        List the last [nums] files found, e.g. {$argv[0]} 5\n";
         break;
     // m list
     case 'list':
     case 'ls':
     case 'l':
+        if (isset($argv[2]) && is_numeric($argv[2]) && intval($argv[2]) > 0 && intval($argv[2]) < 500) {
+            $selected_files = listFiles([...$config, 'time_limit' => 99999], intval($argv[2]));
+        } else {
+            $selected_files = listFiles($config);
+        }
         if ($selected_files) {
             $table_header = ['File Name', 'Size (bytes)', 'Last Modified'];
             $table_rows = [];
@@ -81,7 +108,7 @@ switch ($argv[1] ?? null) {
                     is_dir($file) ? "{$file}/" : $file,
                     is_file($file) ? filesize($file) : (is_dir($file) ? 'dir' : 'unknown'),
                     // use XXX minutes ago format
-                    intval((time() - filemtime($file)) / 60) . ' minutes ago',
+                    filetime2str($file),
                 ];
             }
 
@@ -92,6 +119,12 @@ switch ($argv[1] ?? null) {
         break;
     // m (move to current folder)
     default:
+        // list the last N files if argument is a number
+        if (isset($argv[1]) && is_numeric($argv[1]) && intval($argv[1]) > 0 && intval($argv[1]) < 500) {
+            $selected_files = listFiles([...$config, 'time_limit' => 99999], intval($argv[1]));
+        } else {
+            $selected_files = listFiles($config);
+        }
         // if multiple files found, ask for confirmation
         if (count($selected_files) > 1) {
             // use k-v to display
@@ -99,7 +132,7 @@ switch ($argv[1] ?? null) {
             foreach ($selected_files as $v) {
                 $selected_ls[$v] = is_dir($v) ? "{$v}/" : $v;
                 // add time
-                $selected_ls[$v] .= ' (' . intval((time() - filemtime($v)) / 60) . ' minutes ago)';
+                $selected_ls[$v] .= ' ('.filetime2str($v) . ')';
             }
             $selected_file = select(label: "Multiple files found, which file do you want to move?", options: $selected_ls, default: $selected_files[0]);
         } elseif (count($selected_files) === 1) {
