@@ -21,13 +21,13 @@ Download and extract the appropriate binary for your system:
 
 ```bash
 # Linux x86_64
-curl -fsSL https://github.com/crazywhalecc/m/releases/latest/download/m-linux-x86_64.tgz -o m-linux-x86_64.tgz && tar -zxvf m-linux-x86_64.tgz && rm m-linux-x86_64.tgz
+curl -fsSL https://github.com/crazywhalecc/m/releases/download/0.1.0/m-linux-x86_64.tgz -o m-linux-x86_64.tgz && tar -zxvf m-linux-x86_64.tgz && rm m-linux-x86_64.tgz
 # macOS x86_64 (Intel)
-curl -fsSL https://github.com/crazywhalecc/m/releases/latest/download/m-macos-x86_64.tgz -o m-macos-x86_64.tgz && tar -zxvf m-macos-x86_64.tgz && rm m-macos-x86_64.tgz
+curl -fsSL https://github.com/crazywhalecc/m/releases/download/0.1.0/m-macos-x86_64.tgz -o m-macos-x86_64.tgz && tar -zxvf m-macos-x86_64.tgz && rm m-macos-x86_64.tgz
 # linux aarch64
-curl -fsSL https://github.com/crazywhalecc/m/releases/latest/download/m-linux-aarch64.tgz -o m-linux-aarch64.tgz && tar -zxvf m-linux-aarch64.tgz && rm m-linux-aarch64.tgz
+curl -fsSL https://github.com/crazywhalecc/m/releases/download/0.1.0/m-linux-aarch64.tgz -o m-linux-aarch64.tgz && tar -zxvf m-linux-aarch64.tgz && rm m-linux-aarch64.tgz
 # macOS aarch64 (Apple Silicon)
-curl -fsSL https://github.com/crazywhalecc/m/releases/latest/download/m-macos-aarch64.tgz -o m-macos-aarch64.tgz && tar -zxvf m-macos-aarch64.tgz && rm m-macos-aarch64.tgz
+curl -fsSL https://github.com/crazywhalecc/m/releases/download/0.1.0/m-macos-aarch64.tgz -o m-macos-aarch64.tgz && tar -zxvf m-macos-aarch64.tgz && rm m-macos-aarch64.tgz
 ```
 
 Move `m` to a directory in your PATH, for example:
